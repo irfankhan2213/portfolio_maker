@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -31,10 +32,6 @@ export default function AdminPage() {
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
-        if (!session?.user) {
-          navigate('/auth');
-        }
         setLoading(false);
       }
     );
@@ -43,10 +40,6 @@ export default function AdminPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
-      if (!session?.user) {
-        navigate('/auth');
-      }
       setLoading(false);
     });
 
@@ -60,7 +53,6 @@ export default function AdminPage() {
         title: "Signed out",
         description: "You have been successfully signed out.",
       });
-      navigate('/auth');
     } catch (error) {
       toast({
         title: "Error",
@@ -81,27 +73,6 @@ export default function AdminPage() {
     );
   }
 
-  if (!user || !session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Shield className="h-8 w-8 mx-auto mb-2 text-destructive" />
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>
-              Please sign in to access the admin panel.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/auth')} className="w-full">
-              Go to Sign In
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -111,17 +82,23 @@ export default function AdminPage() {
             <div>
               <h1 className="text-2xl font-bold">Portfolio Admin</h1>
               <p className="text-sm text-muted-foreground">
-                Welcome back, {user.email}
+                {user ? `Welcome back, ${user.email}` : "Admin Panel - Direct Access"}
               </p>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" onClick={() => navigate('/')}>
                 View Site
               </Button>
-              <Button variant="ghost" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
+              {user ? (
+                <Button variant="ghost" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              ) : (
+                <Button variant="ghost" onClick={() => navigate('/auth')}>
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -151,7 +128,7 @@ export default function AdminPage() {
 
           <div className="mt-8">
             <TabsContent value="profile">
-              <ProfileManager userId={user.id} />
+              <ProfileManager userId={user?.id || 'anonymous'} />
             </TabsContent>
 
             <TabsContent value="projects">
@@ -172,25 +149,39 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="p-4 border border-border rounded-lg">
-                      <h3 className="font-medium mb-2">Account Information</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Email: {user.email}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Account created: {new Date(user.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    
-                    <div className="p-4 border border-destructive/20 rounded-lg">
-                      <h3 className="font-medium text-destructive mb-2">Danger Zone</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Once you sign out, you'll need to sign in again to access the admin panel.
-                      </p>
-                      <Button variant="destructive" onClick={handleSignOut}>
-                        Sign Out
-                      </Button>
-                    </div>
+                    {user ? (
+                      <>
+                        <div className="p-4 border border-border rounded-lg">
+                          <h3 className="font-medium mb-2">Account Information</h3>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Email: {user.email}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Account created: {new Date(user.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        
+                        <div className="p-4 border border-destructive/20 rounded-lg">
+                          <h3 className="font-medium text-destructive mb-2">Danger Zone</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Once you sign out, you'll need to sign in again to access the admin panel.
+                          </p>
+                          <Button variant="destructive" onClick={handleSignOut}>
+                            Sign Out
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="p-4 border border-border rounded-lg">
+                        <h3 className="font-medium mb-2">Not Authenticated</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          You are accessing the admin panel without authentication. Some features may be limited.
+                        </p>
+                        <Button variant="outline" onClick={() => navigate('/auth')}>
+                          Sign In for Full Access
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
