@@ -71,7 +71,12 @@ export function ProfileManager({ userId }: ProfileManagerProps) {
     try {
       const profileData = {
         user_id: userId,
-        ...data,
+        name: data.name, // Ensure name is always present
+        tagline: data.tagline || null,
+        about: data.about || null,
+        email: data.email || null,
+        linkedin_url: data.linkedin_url || null,
+        github_url: data.github_url || null,
       };
 
       let result;

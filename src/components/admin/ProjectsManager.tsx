@@ -96,10 +96,12 @@ export function ProjectsManager() {
         .filter(tech => tech.length > 0);
 
       const projectData = {
-        ...data,
+        title: data.title, // Ensure title is always present
+        description: data.description || null,
         tech_stack: techStack,
         live_url: data.live_url || null,
         github_url: data.github_url || null,
+        featured: data.featured,
       };
 
       let result;
