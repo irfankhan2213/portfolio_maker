@@ -7,7 +7,10 @@ import {
   MessageSquare, 
   Settings, 
   LogOut,
-  Shield
+  Shield,
+  Briefcase,
+  Code,
+  GraduationCap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +20,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProfileManager } from "@/components/admin/ProfileManager";
 import { ProjectsManager } from "@/components/admin/ProjectsManager";
 import { ContactMessages } from "@/components/admin/ContactMessages";
+import { ExperienceManager } from "@/components/admin/ExperienceManager";
+import { SkillsManager } from "@/components/admin/SkillsManager";
+import { EducationManager } from "@/components/admin/EducationManager";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 
 export default function AdminPage() {
@@ -107,10 +113,22 @@ export default function AdminPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
+            </TabsTrigger>
+            <TabsTrigger value="experience" className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              Experience
+            </TabsTrigger>
+            <TabsTrigger value="skills" className="flex items-center gap-2">
+              <Code className="h-4 w-4" />
+              Skills
+            </TabsTrigger>
+            <TabsTrigger value="education" className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              Education
             </TabsTrigger>
             <TabsTrigger value="projects" className="flex items-center gap-2">
               <FolderOpen className="h-4 w-4" />
@@ -129,6 +147,18 @@ export default function AdminPage() {
           <div className="mt-8">
             <TabsContent value="profile">
               <ProfileManager userId={user?.id || 'anonymous'} />
+            </TabsContent>
+
+            <TabsContent value="experience">
+              <ExperienceManager />
+            </TabsContent>
+
+            <TabsContent value="skills">
+              <SkillsManager />
+            </TabsContent>
+
+            <TabsContent value="education">
+              <EducationManager />
             </TabsContent>
 
             <TabsContent value="projects">
