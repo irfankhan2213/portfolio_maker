@@ -16,8 +16,14 @@ const profileSchema = z.object({
   tagline: z.string().optional(),
   about: z.string().optional(),
   email: z.string().email().optional(),
+  phone: z.string().optional(),
+  location: z.string().optional(),
+  years_of_experience: z.string().optional(),
+  availability_status: z.string().optional(),
   linkedin_url: z.string().url().optional().or(z.literal("")),
   github_url: z.string().url().optional().or(z.literal("")),
+  resume_url: z.string().url().optional().or(z.literal("")),
+  website_url: z.string().url().optional().or(z.literal("")),
 });
 
 type ProfileForm = z.infer<typeof profileSchema>;
@@ -59,8 +65,14 @@ export function ProfileManager({ userId }: ProfileManagerProps) {
         tagline: data.tagline || "",
         about: data.about || "",
         email: data.email || "",
+        phone: data.phone || "",
+        location: data.location || "",
+        years_of_experience: data.years_of_experience || "",
+        availability_status: data.availability_status || "",
         linkedin_url: data.linkedin_url || "",
         github_url: data.github_url || "",
+        resume_url: data.resume_url || "",
+        website_url: data.website_url || "",
       });
     }
   };
@@ -71,12 +83,18 @@ export function ProfileManager({ userId }: ProfileManagerProps) {
     try {
       const profileData = {
         user_id: userId,
-        name: data.name, // Ensure name is always present
+        name: data.name,
         tagline: data.tagline || null,
         about: data.about || null,
         email: data.email || null,
+        phone: data.phone || null,
+        location: data.location || null,
+        years_of_experience: data.years_of_experience || null,
+        availability_status: data.availability_status || null,
         linkedin_url: data.linkedin_url || null,
         github_url: data.github_url || null,
+        resume_url: data.resume_url || null,
+        website_url: data.website_url || null,
       };
 
       let result;
@@ -239,6 +257,62 @@ export function ProfileManager({ userId }: ProfileManagerProps) {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  {...register("phone")}
+                  placeholder="+1 (555) 123-4567"
+                  className="mt-1"
+                />
+                {errors.phone && (
+                  <p className="text-sm text-destructive mt-1">{errors.phone.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  {...register("location")}
+                  placeholder="City, Country"
+                  className="mt-1"
+                />
+                {errors.location && (
+                  <p className="text-sm text-destructive mt-1">{errors.location.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="years_of_experience">Years of Experience</Label>
+                <Input
+                  id="years_of_experience"
+                  {...register("years_of_experience")}
+                  placeholder="5+ years"
+                  className="mt-1"
+                />
+                {errors.years_of_experience && (
+                  <p className="text-sm text-destructive mt-1">{errors.years_of_experience.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="availability_status">Availability Status</Label>
+                <Input
+                  id="availability_status"
+                  {...register("availability_status")}
+                  placeholder="Available for hire, Open to opportunities, etc."
+                  className="mt-1"
+                />
+                {errors.availability_status && (
+                  <p className="text-sm text-destructive mt-1">{errors.availability_status.message}</p>
+                )}
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="tagline">Tagline</Label>
               <Input
@@ -290,6 +364,34 @@ export function ProfileManager({ userId }: ProfileManagerProps) {
                 />
                 {errors.github_url && (
                   <p className="text-sm text-destructive mt-1">{errors.github_url.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="resume_url">Resume URL</Label>
+                <Input
+                  id="resume_url"
+                  {...register("resume_url")}
+                  placeholder="https://example.com/resume.pdf"
+                  className="mt-1"
+                />
+                {errors.resume_url && (
+                  <p className="text-sm text-destructive mt-1">{errors.resume_url.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="website_url">Personal Website</Label>
+                <Input
+                  id="website_url"
+                  {...register("website_url")}
+                  placeholder="https://yourwebsite.com"
+                  className="mt-1"
+                />
+                {errors.website_url && (
+                  <p className="text-sm text-destructive mt-1">{errors.website_url.message}</p>
                 )}
               </div>
             </div>

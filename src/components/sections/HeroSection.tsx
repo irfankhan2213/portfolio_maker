@@ -1,12 +1,19 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MapPin, Clock, Download, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Profile {
   name: string;
   tagline: string;
   profile_photo_url: string;
+  location?: string;
+  years_of_experience?: string;
+  availability_status?: string;
+  phone?: string;
+  resume_url?: string;
+  website_url?: string;
 }
 
 export function HeroSection() {
@@ -16,7 +23,7 @@ export function HeroSection() {
     const fetchProfile = async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, tagline, profile_photo_url")
+        .select("name, tagline, profile_photo_url, location, years_of_experience, availability_status, phone, resume_url, website_url")
         .single();
       
       if (data) {
@@ -66,6 +73,27 @@ export function HeroSection() {
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
             {profile.tagline}
           </p>
+          
+          {/* Additional Info */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+            {profile.location && (
+              <div className="flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                <span>{profile.location}</span>
+              </div>
+            )}
+            {profile.years_of_experience && (
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                <span>{profile.years_of_experience}</span>
+              </div>
+            )}
+            {profile.availability_status && (
+              <div className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-xs">
+                {profile.availability_status}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* CTA Buttons */}
@@ -76,6 +104,22 @@ export function HeroSection() {
           <Button variant="outline" size="lg">
             <a href="#contact">Get In Touch</a>
           </Button>
+          {profile.resume_url && (
+            <Button variant="outline" size="lg" asChild>
+              <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
+                <Download className="h-4 w-4 mr-2" />
+                Download Resume
+              </a>
+            </Button>
+          )}
+          {profile.website_url && (
+            <Button variant="ghost" size="lg" asChild>
+              <a href={profile.website_url} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Visit Website
+              </a>
+            </Button>
+          )}
         </div>
       </div>
 
