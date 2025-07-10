@@ -38,6 +38,93 @@ export type Database = {
         }
         Relationships: []
       }
+      educations: {
+        Row: {
+          created_at: string
+          degree: string
+          description: string | null
+          end_date: string | null
+          field_of_study: string | null
+          gpa: string | null
+          id: string
+          institution: string
+          is_current: boolean
+          sort_order: number
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          degree: string
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          gpa?: string | null
+          id?: string
+          institution: string
+          is_current?: boolean
+          sort_order?: number
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          degree?: string
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          gpa?: string | null
+          id?: string
+          institution?: string
+          is_current?: boolean
+          sort_order?: number
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      experiences: {
+        Row: {
+          company: string
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          is_current: boolean
+          location: string | null
+          position: string
+          sort_order: number
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean
+          location?: string | null
+          position: string
+          sort_order?: number
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean
+          location?: string | null
+          position?: string
+          sort_order?: number
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           about: string | null
@@ -118,6 +205,36 @@ export type Database = {
           sort_order?: number | null
           tech_stack?: string[] | null
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      skills: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+          proficiency_level: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+          proficiency_level?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          proficiency_level?: string
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []

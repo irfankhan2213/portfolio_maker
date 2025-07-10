@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 const skillSchema = z.object({
   name: z.string().min(2, "Skill name must be at least 2 characters"),
   category: z.string().min(1, "Category is required"),
-  proficiency: z.string().min(1, "Proficiency level is required"),
+  proficiency_level: z.string().min(1, "Proficiency level is required"),
 });
 
 type SkillForm = z.infer<typeof skillSchema>;
@@ -34,7 +34,7 @@ interface Skill {
   id: string;
   name: string;
   category: string;
-  proficiency: string;
+  proficiency_level: string;
   sort_order: number;
 }
 
@@ -75,7 +75,7 @@ export function SkillsManager() {
   });
 
   const watchedCategory = watch("category");
-  const watchedProficiency = watch("proficiency");
+  const watchedProficiencyLevel = watch("proficiency_level");
 
   useEffect(() => {
     fetchSkills();
@@ -100,7 +100,7 @@ export function SkillsManager() {
       const skillData = {
         name: data.name,
         category: data.category,
-        proficiency: data.proficiency,
+        proficiency_level: data.proficiency_level,
       };
 
       let result;
@@ -143,7 +143,7 @@ export function SkillsManager() {
     reset({
       name: skill.name,
       category: skill.category,
-      proficiency: skill.proficiency,
+      proficiency_level: skill.proficiency_level,
     });
     setIsDialogOpen(true);
   };
@@ -180,12 +180,12 @@ export function SkillsManager() {
     reset({
       name: "",
       category: "",
-      proficiency: "",
+      proficiency_level: "",
     });
   };
 
-  const getStarsForProficiency = (proficiency: string) => {
-    const level = proficiencyLevels.find(p => p.value === proficiency);
+  const getStarsForProficiency = (proficiency_level: string) => {
+    const level = proficiencyLevels.find(p => p.value === proficiency_level);
     return level ? level.stars : 1;
   };
 
@@ -253,8 +253,8 @@ export function SkillsManager() {
               </div>
 
               <div>
-                <Label htmlFor="proficiency">Proficiency Level *</Label>
-                <Select value={watchedProficiency} onValueChange={(value) => setValue("proficiency", value)}>
+                <Label htmlFor="proficiency_level">Proficiency Level *</Label>
+                <Select value={watchedProficiencyLevel} onValueChange={(value) => setValue("proficiency_level", value)}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select proficiency level" />
                   </SelectTrigger>
@@ -278,8 +278,8 @@ export function SkillsManager() {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.proficiency && (
-                  <p className="text-sm text-destructive mt-1">{errors.proficiency.message}</p>
+                {errors.proficiency_level && (
+                  <p className="text-sm text-destructive mt-1">{errors.proficiency_level.message}</p>
                 )}
               </div>
 
@@ -317,7 +317,7 @@ export function SkillsManager() {
                           <Star
                             key={i}
                             className={`h-3 w-3 ${
-                              i < getStarsForProficiency(skill.proficiency) 
+                              i < getStarsForProficiency(skill.proficiency_level) 
                                 ? 'fill-yellow-400 text-yellow-400' 
                                 : 'text-gray-300'
                             }`}
@@ -325,7 +325,7 @@ export function SkillsManager() {
                         ))}
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        {proficiencyLevels.find(p => p.value === skill.proficiency)?.label}
+                        {proficiencyLevels.find(p => p.value === skill.proficiency_level)?.label}
                       </Badge>
                     </div>
                     
