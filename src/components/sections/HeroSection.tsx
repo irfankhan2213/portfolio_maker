@@ -21,12 +21,12 @@ export function HeroSection() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("name, tagline, profile_photo_url, location, years_of_experience, availability_status, phone, resume_url, website_url")
         .single();
       
-      if (data) {
+      if (data && !error) {
         setProfile(data);
       } else {
         // Default data for demo

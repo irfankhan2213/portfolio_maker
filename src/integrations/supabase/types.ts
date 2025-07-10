@@ -128,42 +128,60 @@ export type Database = {
       profiles: {
         Row: {
           about: string | null
+          availability_status: string | null
           created_at: string
           email: string | null
           github_url: string | null
           id: string
           linkedin_url: string | null
+          location: string | null
           name: string
+          phone: string | null
           profile_photo_url: string | null
+          resume_url: string | null
           tagline: string | null
           updated_at: string
           user_id: string
+          website_url: string | null
+          years_of_experience: string | null
         }
         Insert: {
           about?: string | null
+          availability_status?: string | null
           created_at?: string
           email?: string | null
           github_url?: string | null
           id?: string
           linkedin_url?: string | null
+          location?: string | null
           name: string
+          phone?: string | null
           profile_photo_url?: string | null
+          resume_url?: string | null
           tagline?: string | null
           updated_at?: string
           user_id: string
+          website_url?: string | null
+          years_of_experience?: string | null
         }
         Update: {
           about?: string | null
+          availability_status?: string | null
           created_at?: string
           email?: string | null
           github_url?: string | null
           id?: string
           linkedin_url?: string | null
+          location?: string | null
           name?: string
+          phone?: string | null
           profile_photo_url?: string | null
+          resume_url?: string | null
           tagline?: string | null
           updated_at?: string
           user_id?: string
+          website_url?: string | null
+          years_of_experience?: string | null
         }
         Relationships: []
       }
