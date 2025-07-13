@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,6 +11,14 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+interface ContactInfo {
+  id: string;
+  type: string;
+  label: string;
+  value: string;
+  href?: string;
+}
+
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -21,6 +29,7 @@ type ContactForm = z.infer<typeof contactSchema>;
 
 export function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactInfos, setContactInfos] = useState<ContactInfo[]>([]);
   const { toast } = useToast();
 
   const {
@@ -31,6 +40,21 @@ export function ContactSection() {
   } = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
   });
+
+  useEffect(() => {
+    const fetchContactInfos = async () => {
+      const { data } = await supabase
+        .from("contact_info")
+        .select("*")
+        .order("type", { ascending: true });
+
+      if (data) {
+        setContactInfos(data);
+      }
+    };
+
+    fetchContactInfos();
+  }, []);
 
   const onSubmit = async (data: ContactForm) => {
     setIsSubmitting(true);
@@ -63,26 +87,18 @@ export function ContactSection() {
     }
   };
 
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email",
-      value: "hello@example.com",
-      href: "mailto:hello@example.com",
-    },
-    {
-      icon: Phone,
-      title: "Phone",
-      value: "+1 (555) 123-4567",
-      href: "tel:+15551234567",
-    },
-    {
-      icon: MapPin,
-      title: "Location",
-      value: "San Francisco, CA",
-      href: "#",
-    },
-  ];
+  const getIcon = (type: string) => {
+    switch (type) {
+      case "email":
+        return Mail;
+      case "phone":
+        return Phone;
+      case "location":
+        return MapPin;
+      default:
+        return Mail;
+    }
+  };
 
   return (
     <section id="contact" className="section-padding">
@@ -109,22 +125,25 @@ export function ContactSection() {
             </div>
 
             <div className="space-y-6">
-              {contactInfo.map((info, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <info.icon className="h-6 w-6 text-primary" />
+              {contactInfos.map((info) => {
+                const IconComponent = getIcon(info.type);
+                return (
+                  <div key={info.id} className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <IconComponent className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">{info.label}</h4>
+                      <a
+                        href={info.href || "#"}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {info.value}
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-medium">{info.title}</h4>
-                    <a
-                      href={info.href}
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      {info.value}
-                    </a>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

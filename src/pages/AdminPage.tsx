@@ -10,7 +10,10 @@ import {
   Shield,
   Briefcase,
   Code,
-  GraduationCap
+  GraduationCap,
+  Zap,
+  BarChart3,
+  Phone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +26,9 @@ import { ContactMessages } from "@/components/admin/ContactMessages";
 import { ExperienceManager } from "@/components/admin/ExperienceManager";
 import { SkillsManager } from "@/components/admin/SkillsManager";
 import { EducationManager } from "@/components/admin/EducationManager";
+import { ServicesManager } from "@/components/admin/ServicesManager";
+import { StatsManager } from "@/components/admin/StatsManager";
+import { ContactInfoManager } from "@/components/admin/ContactInfoManager";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 
 export default function AdminPage() {
@@ -113,10 +119,22 @@ export default function AdminPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Services
+            </TabsTrigger>
+            <TabsTrigger value="stats" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Stats
+            </TabsTrigger>
+            <TabsTrigger value="contact-info" className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              Contact
             </TabsTrigger>
             <TabsTrigger value="experience" className="flex items-center gap-2">
               <Briefcase className="h-4 w-4" />
@@ -147,6 +165,18 @@ export default function AdminPage() {
           <div className="mt-8">
             <TabsContent value="profile">
               <ProfileManager userId={user?.id || 'anonymous'} />
+            </TabsContent>
+
+            <TabsContent value="services">
+              <ServicesManager />
+            </TabsContent>
+
+            <TabsContent value="stats">
+              <StatsManager />
+            </TabsContent>
+
+            <TabsContent value="contact-info">
+              <ContactInfoManager />
             </TabsContent>
 
             <TabsContent value="experience">

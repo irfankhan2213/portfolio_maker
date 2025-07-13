@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_info: {
+        Row: {
+          created_at: string
+          href: string | null
+          id: string
+          label: string
+          type: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          href?: string | null
+          id?: string
+          label: string
+          type: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          href?: string | null
+          id?: string
+          label?: string
+          type?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -227,6 +257,36 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          created_at: string
+          description: string
+          icon_name: string
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon_name: string
+          id?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon_name?: string
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string
@@ -254,6 +314,33 @@ export type Database = {
           proficiency_level?: string
           sort_order?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      stats: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          sort_order: number
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
