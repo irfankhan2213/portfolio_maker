@@ -31,6 +31,7 @@ export function FooterManager() {
   const [footerItems, setFooterItems] = useState<FooterInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<FooterInfo | null>(null);
   const { toast } = useToast();
 
   const [newItem, setNewItem] = useState({
@@ -119,6 +120,21 @@ export function FooterManager() {
         description: "Failed to update footer item",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleInputChange = (id: string, field: keyof FooterInfo, value: string) => {
+    setFooterItems(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
+  const handleInputBlur = (id: string, field: keyof FooterInfo, value: string) => {
+    const originalItem = footerItems.find(item => item.id === id);
+    if (originalItem && originalItem[field] !== value) {
+      handleUpdate(id, { [field]: value });
     }
   };
 
@@ -252,16 +268,16 @@ export function FooterManager() {
                     <Label>Label</Label>
                     <Input
                       value={item.label}
-                      onChange={(e) => handleUpdate(item.id, { label: e.target.value })}
-                      onBlur={() => {}}
+                      onChange={(e) => handleInputChange(item.id, 'label', e.target.value)}
+                      onBlur={(e) => handleInputBlur(item.id, 'label', e.target.value)}
                     />
                   </div>
                   <div>
                     <Label>Value</Label>
                     <Input
                       value={item.value}
-                      onChange={(e) => handleUpdate(item.id, { value: e.target.value })}
-                      onBlur={() => {}}
+                      onChange={(e) => handleInputChange(item.id, 'value', e.target.value)}
+                      onBlur={(e) => handleInputBlur(item.id, 'value', e.target.value)}
                     />
                   </div>
                   {item.type === "social" && (
@@ -271,8 +287,8 @@ export function FooterManager() {
                         <div className="flex space-x-2">
                           <Input
                             value={item.href || ""}
-                            onChange={(e) => handleUpdate(item.id, { href: e.target.value })}
-                            onBlur={() => {}}
+                            onChange={(e) => handleInputChange(item.id, 'href', e.target.value)}
+                            onBlur={(e) => handleInputBlur(item.id, 'href', e.target.value)}
                           />
                           {item.href && (
                             <Button
@@ -289,8 +305,8 @@ export function FooterManager() {
                         <Label>Icon Name</Label>
                         <Input
                           value={item.icon_name || ""}
-                          onChange={(e) => handleUpdate(item.id, { icon_name: e.target.value })}
-                          onBlur={() => {}}
+                          onChange={(e) => handleInputChange(item.id, 'icon_name', e.target.value)}
+                          onBlur={(e) => handleInputBlur(item.id, 'icon_name', e.target.value)}
                         />
                       </div>
                     </>

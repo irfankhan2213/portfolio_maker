@@ -1,41 +1,15 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  User, 
-  FolderOpen, 
-  MessageSquare, 
-  Settings, 
-  LogOut,
-  Shield,
-  Briefcase,
-  Code,
-  GraduationCap,
-  Zap,
-  BarChart3,
-  Phone
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileManager } from "@/components/admin/ProfileManager";
-import { ProjectsManager } from "@/components/admin/ProjectsManager";
-import { ContactMessages } from "@/components/admin/ContactMessages";
-import { ExperienceManager } from "@/components/admin/ExperienceManager";
-import { SkillsManager } from "@/components/admin/SkillsManager";
-import { EducationManager } from "@/components/admin/EducationManager";
-import { ServicesManager } from "@/components/admin/ServicesManager";
-import { StatsManager } from "@/components/admin/StatsManager";
-import { ContactInfoManager } from "@/components/admin/ContactInfoManager";
+import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
-import { FooterManager } from "@/components/admin/FooterManager";
 
 export default function AdminPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,22 +32,6 @@ export default function AdminPage() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -87,175 +45,10 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Portfolio Admin</h1>
-              <p className="text-sm text-muted-foreground">
-                {user ? `Welcome back, ${user.email}` : "Admin Panel - Direct Access"}
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/')}>
-                View Site
-              </Button>
-              {user ? (
-                <Button variant="ghost" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              ) : (
-                <Button variant="ghost" onClick={() => navigate('/auth')}>
-                  Sign In
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
+      <AdminHeader user={user} />
+      
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="services" className="flex items-center gap-2">
-              <Zap className="h-4 w-4" />
-              Services
-            </TabsTrigger>
-            <TabsTrigger value="stats" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Stats
-            </TabsTrigger>
-            <TabsTrigger value="contact-info" className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              Contact
-            </TabsTrigger>
-            <TabsTrigger value="experience" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Experience
-            </TabsTrigger>
-            <TabsTrigger value="skills" className="flex items-center gap-2">
-              <Code className="h-4 w-4" />
-              Skills
-            </TabsTrigger>
-            <TabsTrigger value="education" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Education
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4" />
-              Projects
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Messages
-            </TabsTrigger>
-            <TabsTrigger value="footer" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Footer
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="mt-8">
-            <TabsContent value="profile">
-              <ProfileManager userId={user?.id || 'anonymous'} />
-            </TabsContent>
-
-            <TabsContent value="services">
-              <ServicesManager />
-            </TabsContent>
-
-            <TabsContent value="stats">
-              <StatsManager />
-            </TabsContent>
-
-            <TabsContent value="contact-info">
-              <ContactInfoManager />
-            </TabsContent>
-
-            <TabsContent value="experience">
-              <ExperienceManager />
-            </TabsContent>
-
-            <TabsContent value="skills">
-              <SkillsManager />
-            </TabsContent>
-
-            <TabsContent value="education">
-              <EducationManager />
-            </TabsContent>
-
-            <TabsContent value="projects">
-              <ProjectsManager />
-            </TabsContent>
-
-            <TabsContent value="messages">
-              <ContactMessages />
-            </TabsContent>
-
-            <TabsContent value="footer">
-              <FooterManager />
-            </TabsContent>
-
-            <TabsContent value="settings">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Settings</CardTitle>
-                  <CardDescription>
-                    Manage your account settings and preferences.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {user ? (
-                      <>
-                        <div className="p-4 border border-border rounded-lg">
-                          <h3 className="font-medium mb-2">Account Information</h3>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            Email: {user.email}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Account created: {new Date(user.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                        
-                        <div className="p-4 border border-destructive/20 rounded-lg">
-                          <h3 className="font-medium text-destructive mb-2">Danger Zone</h3>
-                          <p className="text-sm text-muted-foreground mb-4">
-                            Once you sign out, you'll need to sign in again to access the admin panel.
-                          </p>
-                          <Button variant="destructive" onClick={handleSignOut}>
-                            Sign Out
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="p-4 border border-border rounded-lg">
-                        <h3 className="font-medium mb-2">Not Authenticated</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          You are accessing the admin panel without authentication. Some features may be limited.
-                        </p>
-                        <Button variant="outline" onClick={() => navigate('/auth')}>
-                          Sign In for Full Access
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </div>
-        </Tabs>
+        <AdminTabs user={user} />
       </main>
     </div>
   );
