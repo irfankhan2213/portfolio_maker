@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -30,6 +29,7 @@ import { ServicesManager } from "@/components/admin/ServicesManager";
 import { StatsManager } from "@/components/admin/StatsManager";
 import { ContactInfoManager } from "@/components/admin/ContactInfoManager";
 import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
+import { FooterManager } from "@/components/admin/FooterManager";
 
 export default function AdminPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -119,7 +119,7 @@ export default function AdminPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -155,6 +155,10 @@ export default function AdminPage() {
             <TabsTrigger value="messages" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Messages
+            </TabsTrigger>
+            <TabsTrigger value="footer" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Footer
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -197,6 +201,10 @@ export default function AdminPage() {
 
             <TabsContent value="messages">
               <ContactMessages />
+            </TabsContent>
+
+            <TabsContent value="footer">
+              <FooterManager />
             </TabsContent>
 
             <TabsContent value="settings">

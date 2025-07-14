@@ -155,6 +155,42 @@ export type Database = {
         }
         Relationships: []
       }
+      footer_info: {
+        Row: {
+          created_at: string
+          href: string | null
+          icon_name: string | null
+          id: string
+          label: string
+          sort_order: number
+          type: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          href?: string | null
+          icon_name?: string | null
+          id?: string
+          label: string
+          sort_order?: number
+          type: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          href?: string | null
+          icon_name?: string | null
+          id?: string
+          label?: string
+          sort_order?: number
+          type?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           about: string | null
