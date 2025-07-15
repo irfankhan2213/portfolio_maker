@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, Plus, ExternalLink } from "lucide-react";
+import { Trash2, Plus, ExternalLink, Save } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,8 +29,10 @@ interface FooterInfo {
 
 export function FooterManager() {
   const [footerItems, setFooterItems] = useState<FooterInfo[]>([]);
+  const [originalItems, setOriginalItems] = useState<FooterInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const { toast } = useToast();
 
   const [newItem, setNewItem] = useState({
@@ -45,6 +47,21 @@ export function FooterManager() {
     fetchFooterItems();
   }, []);
 
+  useEffect(() => {
+    // Check if there are any changes
+    const hasUnsavedChanges = footerItems.some((item, index) => {
+      const original = originalItems[index];
+      if (!original) return true;
+      return (
+        item.label !== original.label ||
+        item.value !== original.value ||
+        item.href !== original.href ||
+        item.icon_name !== original.icon_name
+      );
+    });
+    setHasChanges(hasUnsavedChanges);
+  }, [footerItems, originalItems]);
+
   const fetchFooterItems = async () => {
     try {
       const { data, error } = await supabase
@@ -54,6 +71,7 @@ export function FooterManager() {
 
       if (error) throw error;
       setFooterItems(data || []);
+      setOriginalItems(data || []);
     } catch (error) {
       toast({
         title: "Error",
@@ -107,25 +125,42 @@ export function FooterManager() {
     }
   };
 
-  const handleUpdate = async (id: string, updates: Partial<FooterInfo>) => {
+  const handleSaveAll = async () => {
     try {
-      const { error } = await supabase
-        .from("footer_info")
-        .update(updates)
-        .eq("id", id);
+      const updates = footerItems.map(async (item) => {
+        const original = originalItems.find(orig => orig.id === item.id);
+        if (original && (
+          item.label !== original.label ||
+          item.value !== original.value ||
+          item.href !== original.href ||
+          item.icon_name !== original.icon_name
+        )) {
+          return supabase
+            .from("footer_info")
+            .update({
+              label: item.label,
+              value: item.value,
+              href: item.href,
+              icon_name: item.icon_name,
+            })
+            .eq("id", item.id);
+        }
+        return null;
+      });
 
-      if (error) throw error;
+      const validUpdates = updates.filter(update => update !== null);
+      await Promise.all(validUpdates);
 
       toast({
         title: "Success",
-        description: "Footer item updated successfully",
+        description: "All changes saved successfully",
       });
 
       fetchFooterItems();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update footer item",
+        description: "Failed to save changes",
         variant: "destructive",
       });
     }
@@ -137,13 +172,6 @@ export function FooterManager() {
         item.id === id ? { ...item, [field]: value } : item
       )
     );
-  };
-
-  const handleInputBlur = (id: string, field: keyof FooterInfo, value: string) => {
-    const originalItem = footerItems.find(item => item.id === id);
-    if (originalItem && originalItem[field] !== value) {
-      handleUpdate(id, { [field]: value });
-    }
   };
 
   const handleDelete = async (id: string) => {
@@ -185,87 +213,95 @@ export function FooterManager() {
       <CardContent className="space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Footer Items</h3>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Item
+          <div className="flex gap-2">
+            {hasChanges && (
+              <Button onClick={handleSaveAll} variant="default">
+                <Save className="h-4 w-4 mr-2" />
+                Save Changes
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Footer Item</DialogTitle>
-                <DialogDescription>
-                  Add a new footer item (social link or copyright text)
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="type">Type</Label>
-                  <Select
-                    value={newItem.type}
-                    onValueChange={(value) => setNewItem({ ...newItem, type: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="social">Social Link</SelectItem>
-                      <SelectItem value="copyright">Copyright Text</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="label">Label</Label>
-                  <Input
-                    id="label"
-                    value={newItem.label}
-                    onChange={(e) => setNewItem({ ...newItem, label: e.target.value })}
-                    placeholder="e.g., GitHub"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="value">Value</Label>
-                  <Input
-                    id="value"
-                    value={newItem.value}
-                    onChange={(e) => setNewItem({ ...newItem, value: e.target.value })}
-                    placeholder="e.g., GitHub or Your Name"
-                  />
-                </div>
-                {newItem.type === "social" && (
-                  <>
-                    <div>
-                      <Label htmlFor="href">URL</Label>
-                      <Input
-                        id="href"
-                        value={newItem.href}
-                        onChange={(e) => setNewItem({ ...newItem, href: e.target.value })}
-                        placeholder="https://github.com/username"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="icon_name">Icon Name</Label>
-                      <Input
-                        id="icon_name"
-                        value={newItem.icon_name}
-                        onChange={(e) => setNewItem({ ...newItem, icon_name: e.target.value })}
-                        placeholder="Github, Linkedin, Mail, etc."
-                      />
-                    </div>
-                  </>
-                )}
-                <Button onClick={handleAdd} className="w-full">
-                  Add Footer Item
+            )}
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Item
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Footer Item</DialogTitle>
+                  <DialogDescription>
+                    Add a new footer item (social link or copyright text)
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="type">Type</Label>
+                    <Select
+                      value={newItem.type}
+                      onValueChange={(value) => setNewItem({ ...newItem, type: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="social">Social Link</SelectItem>
+                        <SelectItem value="copyright">Copyright Text</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="label">Label</Label>
+                    <Input
+                      id="label"
+                      value={newItem.label}
+                      onChange={(e) => setNewItem({ ...newItem, label: e.target.value })}
+                      placeholder="e.g., GitHub"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="value">Value</Label>
+                    <Input
+                      id="value"
+                      value={newItem.value}
+                      onChange={(e) => setNewItem({ ...newItem, value: e.target.value })}
+                      placeholder="e.g., GitHub or Your Name"
+                    />
+                  </div>
+                  {newItem.type === "social" && (
+                    <>
+                      <div>
+                        <Label htmlFor="href">URL</Label>
+                        <Input
+                          id="href"
+                          value={newItem.href}
+                          onChange={(e) => setNewItem({ ...newItem, href: e.target.value })}
+                          placeholder="https://github.com/username"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="icon_name">Icon Name</Label>
+                        <Input
+                          id="icon_name"
+                          value={newItem.icon_name}
+                          onChange={(e) => setNewItem({ ...newItem, icon_name: e.target.value })}
+                          placeholder="Github, Linkedin, Mail, etc."
+                        />
+                      </div>
+                    </>
+                  )}
+                  <Button onClick={handleAdd} className="w-full">
+                    Add Footer Item
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <div className="space-y-4">
           {footerItems.map((item) => (
-            <Card key={item.id}>
+            <Card key={item.id} className={hasChanges ? "border-orange-200 bg-orange-50" : ""}>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -277,7 +313,6 @@ export function FooterManager() {
                     <Input
                       value={item.label}
                       onChange={(e) => handleInputChange(item.id, 'label', e.target.value)}
-                      onBlur={(e) => handleInputBlur(item.id, 'label', e.target.value)}
                     />
                   </div>
                   <div>
@@ -285,7 +320,6 @@ export function FooterManager() {
                     <Input
                       value={item.value}
                       onChange={(e) => handleInputChange(item.id, 'value', e.target.value)}
-                      onBlur={(e) => handleInputBlur(item.id, 'value', e.target.value)}
                     />
                   </div>
                   {item.type === "social" && (
@@ -296,7 +330,6 @@ export function FooterManager() {
                           <Input
                             value={item.href || ""}
                             onChange={(e) => handleInputChange(item.id, 'href', e.target.value)}
-                            onBlur={(e) => handleInputBlur(item.id, 'href', e.target.value)}
                           />
                           {item.href && (
                             <Button
@@ -314,7 +347,6 @@ export function FooterManager() {
                         <Input
                           value={item.icon_name || ""}
                           onChange={(e) => handleInputChange(item.id, 'icon_name', e.target.value)}
-                          onBlur={(e) => handleInputBlur(item.id, 'icon_name', e.target.value)}
                         />
                       </div>
                     </>
