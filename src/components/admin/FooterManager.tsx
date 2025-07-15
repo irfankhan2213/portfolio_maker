@@ -31,7 +31,6 @@ export function FooterManager() {
   const [footerItems, setFooterItems] = useState<FooterInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<FooterInfo | null>(null);
   const { toast } = useToast();
 
   const [newItem, setNewItem] = useState({
@@ -67,6 +66,15 @@ export function FooterManager() {
   };
 
   const handleAdd = async () => {
+    if (!newItem.label || !newItem.value) {
+      toast({
+        title: "Error",
+        description: "Please fill in label and value fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const maxOrder = Math.max(...footerItems.map(item => item.sort_order), 0);
       const { error } = await supabase.from("footer_info").insert({
